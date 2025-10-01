@@ -45,9 +45,9 @@ public class Credit {
     public void setTauxInteret(double tauxInteret) { this.tauxInteret = tauxInteret; }
     public int getDureeMois() { return dureeMois; }
     public void setDureeMois(int dureeMois) { this.dureeMois = dureeMois; }
-    public TypeCredit getTypeCredit() { return typeCredit; }
+    public String getTypeCredit() { return typeCredit; }
     public void setTypeCredit(TypeCredit typeCredit) { this.typeCredit = typeCredit; }
-    public DecisionCredit getDecision() { return decision; }
+    public String getDecision() { return decision; }
     public void setDecision(DecisionCredit decision) { this.decision = decision; }
 
     @Override
