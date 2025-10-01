@@ -1,4 +1,4 @@
 package repository;
 
-public class CreditRepository {
+public interface CreditRepository {
 }
