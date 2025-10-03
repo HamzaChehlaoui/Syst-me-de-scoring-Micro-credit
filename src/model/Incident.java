@@ -1,26 +1,18 @@
 package model;
 
-import model.enums.TypeIncident;
 import java.time.LocalDate;
+import enums.IncidentType;
 
+/**
+ * Incident lie au paiement.
+ */
 public class Incident {
     private Long id;
     private LocalDate dateIncident;
-    private Long echeanceId; // linked echeance
-    private TypeIncident typeIncident;
-    private int scoreImpact;
-    private String description;
-
-    public Incident() {}
-
-    public Incident(LocalDate dateIncident, Long echeanceId, TypeIncident typeIncident, int scoreImpact, String description) {
-
-        this.dateIncident = dateIncident;
-        this.echeanceId = echeanceId;
-        this.typeIncident = typeIncident;
-        this.scoreImpact = scoreImpact;
-        this.description = description;
-    }
+    private Long echeanceId;
+    private IncidentType typeIncident;
+    private int impactScore;
+    private String note;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -28,22 +20,10 @@ public class Incident {
     public void setDateIncident(LocalDate dateIncident) { this.dateIncident = dateIncident; }
     public Long getEcheanceId() { return echeanceId; }
     public void setEcheanceId(Long echeanceId) { this.echeanceId = echeanceId; }
-    public TypeIncident getTypeIncident() { return typeIncident; }
-    public void setTypeIncident(TypeIncident typeIncident) { this.typeIncident = typeIncident; }
-    public int getScoreImpact() { return scoreImpact; }
-    public void setScoreImpact(int scoreImpact) { this.scoreImpact = scoreImpact; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    @Override
-    public String toString() {
-        return "Incident{" +
-                "id=" + id +
-                ", dateIncident=" + dateIncident +
-                ", echeanceId=" + echeanceId +
-                ", typeIncident=" + typeIncident +
-                ", scoreImpact=" + scoreImpact +
-                ", description='" + description + '\'' +
-                '}';
-    }
+    public IncidentType getTypeIncident() { return typeIncident; }
+    public void setTypeIncident(IncidentType typeIncident) { this.typeIncident = typeIncident; }
+    public int getImpactScore() { return impactScore; }
+    public void setImpactScore(int impactScore) { this.impactScore = impactScore; }
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
 }
