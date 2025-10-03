@@ -1,9 +1,11 @@
 package model;
 
-import model.enums.SituationFamiliale;
 import java.time.LocalDate;
-import java.util.Objects;
+import java.time.LocalDateTime;
 
+/**
+ * Base class for a person (client). Specialized by Employe and Professionnel.
+ */
 public abstract class Personne {
     private Long id;
     private String nom;
@@ -11,31 +13,13 @@ public abstract class Personne {
     private LocalDate dateNaissance;
     private String ville;
     private int nombreEnfants;
-    private double investissement;
-    private double placement;
-    private SituationFamiliale situationFamiliale;
-    private LocalDate createdAt;
-    private int score;
+    private boolean investissement;
+    private boolean placement;
+    private String situationFamiliale; // "Marie" | "Celibataire"
+    private LocalDateTime createdAt;
+    private Integer score; // last known score
+    private String type; // EMPLOYE | PROFESSIONNEL
 
-    public Personne() { this.createdAt = LocalDate.now(); }
-
-    public Personne(String nom, String prenom, LocalDate dateNaissance, String ville,
-                    int nombreEnfants, double investissement, double placement,
-                    SituationFamiliale situationFamiliale, LocalDate createdAt, int score) {
-
-        this.nom = nom;
-        this.prenom = prenom;
-        this.dateNaissance = dateNaissance;
-        this.ville = ville;
-        this.nombreEnfants = nombreEnfants;
-        this.investissement = investissement;
-        this.placement = placement;
-        this.situationFamiliale = situationFamiliale;
-        this.createdAt = createdAt == null ? LocalDate.now() : createdAt;
-        this.score = score;
-    }
-
-    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNom() { return nom; }
@@ -48,45 +32,16 @@ public abstract class Personne {
     public void setVille(String ville) { this.ville = ville; }
     public int getNombreEnfants() { return nombreEnfants; }
     public void setNombreEnfants(int nombreEnfants) { this.nombreEnfants = nombreEnfants; }
-    public double getInvestissement() { return investissement; }
-    public void setInvestissement(double investissement) { this.investissement = investissement; }
-    public double getPlacement() { return placement; }
-    public void setPlacement(double placement) { this.placement = placement; }
-    public SituationFamiliale getSituationFamiliale() { return situationFamiliale; }
-    public void setSituationFamiliale(SituationFamiliale situationFamiliale) { this.situationFamiliale = situationFamiliale; }
-    public LocalDate getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDate createdAt) { this.createdAt = createdAt; }
-    public int getScore() { return score; }
-    public void setScore(int score) { this.score = score; }
-
-    @Override
-    public String toString() {
-        return "Personne{" +
-                "id=" + id +
-                ", nom='" + nom + '\'' +
-                ", prenom='" + prenom + '\'' +
-                ", dateNaissance=" + dateNaissance +
-                ", ville='" + ville + '\'' +
-                ", nombreEnfants=" + nombreEnfants +
-                ", investissement=" + investissement +
-                ", placement=" + placement +
-                ", situationFamiliale=" + situationFamiliale +
-                ", createdAt=" + createdAt +
-                ", score=" + score +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Personne personne = (Personne) o;
-        return Objects.equals(id, personne.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+    public boolean isInvestissement() { return investissement; }
+    public void setInvestissement(boolean investissement) { this.investissement = investissement; }
+    public boolean isPlacement() { return placement; }
+    public void setPlacement(boolean placement) { this.placement = placement; }
+    public String getSituationFamiliale() { return situationFamiliale; }
+    public void setSituationFamiliale(String situationFamiliale) { this.situationFamiliale = situationFamiliale; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public Integer getScore() { return score; }
+    public void setScore(Integer score) { this.score = score; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 }
