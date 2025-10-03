@@ -1,27 +1,18 @@
 package model;
 
-import model.enums.StatutPaiement;
 import java.time.LocalDate;
+import enums.PaymentStatus;
 
+/**
+ * Echeance de remboursement.
+ */
 public class Echeance {
     private Long id;
     private Long creditId;
     private LocalDate dateEcheance;
     private double mensualite;
-    private LocalDate datePaiement;
-    private StatutPaiement statutPaiement;
-
-    public Echeance() {}
-
-    public Echeance( Long creditId, LocalDate dateEcheance, double mensualite,
-                    LocalDate datePaiement, StatutPaiement statutPaiement) {
-
-        this.creditId = creditId;
-        this.dateEcheance = dateEcheance;
-        this.mensualite = mensualite;
-        this.datePaiement = datePaiement;
-        this.statutPaiement = statutPaiement;
-    }
+    private LocalDate datePaiement; // nullable
+    private PaymentStatus statutPaiement;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -33,18 +24,6 @@ public class Echeance {
     public void setMensualite(double mensualite) { this.mensualite = mensualite; }
     public LocalDate getDatePaiement() { return datePaiement; }
     public void setDatePaiement(LocalDate datePaiement) { this.datePaiement = datePaiement; }
-    public StatutPaiement getStatutPaiement() { return statutPaiement; }
-    public void setStatutPaiement(StatutPaiement statutPaiement) { this.statutPaiement = statutPaiement; }
-
-    @Override
-    public String toString() {
-        return "Echeance{" +
-                "id=" + id +
-                ", creditId=" + creditId +
-                ", dateEcheance=" + dateEcheance +
-                ", mensualite=" + mensualite +
-                ", datePaiement=" + datePaiement +
-                ", statutPaiement=" + statutPaiement +
-                '}';
-    }
+    public PaymentStatus getStatutPaiement() { return statutPaiement; }
+    public void setStatutPaiement(PaymentStatus statutPaiement) { this.statutPaiement = statutPaiement; }
 }
