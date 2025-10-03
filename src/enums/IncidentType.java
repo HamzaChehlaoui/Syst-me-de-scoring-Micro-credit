@@ -1,8 +1,7 @@
-package model.enums;
+package enums;
 
 public enum IncidentType {
-    MARIE,
-    CELIBATAIRE,
-    DIVORCE,
-    VEUF
+    RETARD,
+    IMPAYE,
+    REGULARISATION
 }
