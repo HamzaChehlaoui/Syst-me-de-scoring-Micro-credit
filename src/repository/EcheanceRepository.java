@@ -1,4 +1,4 @@
 package repository;
 
-public interface EcheanceRepository {
+public class EcheanceRepository {
 }

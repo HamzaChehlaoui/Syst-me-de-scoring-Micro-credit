@@ -1,6 +1,6 @@
 package model.enums;
 
-public enum TypeIncident {
+public enum PaymentStatus {
     PAYE_A_TEMPS,
     EN_RETARD,
     PAYE_EN_RETARD,

@@ -1,4 +1,4 @@
 package repository;
 
-public interface IncidentRepository {
+public class IncidentRepository {
 }

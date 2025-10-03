@@ -1,6 +1,6 @@
 package model.enums;
 
-public enum SituationFamiliale {
+public enum IncidentType {
     MARIE,
     CELIBATAIRE,
     DIVORCE,

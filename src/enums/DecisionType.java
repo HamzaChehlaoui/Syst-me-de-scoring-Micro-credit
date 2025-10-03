@@ -1,6 +1,6 @@
-package model.enums;
+package enums;
 
-public enum DecisionCredit {
+public enum DecisionType {
     ACCORD_IMMEDIAT,
     ETUDE_MANUELLE,
     REFUS_AUTOMATIQUE

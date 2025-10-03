@@ -1,0 +1,10 @@
+package model.enums;
+
+public enum Secteur {
+    CDI_SECTEUR_PUBLIC ,
+    CDI_SECTEUR_PRIVE_GRAND_ENTREPRISE,
+    CDI_SECTEUR_PRIVE_PME ,
+    INTERIM,
+    AUTO_ENTREPRENEUR,
+    LIBERAL
+}

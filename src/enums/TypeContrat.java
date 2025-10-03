@@ -1,6 +1,6 @@
 package model.enums;
 
-public enum TypeCredit {
+public enum TypeContrat {
     CONSOMMATION,
     IMMOBILIER,
     AUTO,
