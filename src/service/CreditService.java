@@ -73,9 +73,7 @@ public class CreditService {
         return 0.0;
     }
 
-    /**
-     * Annuity formula: M = P * r / (1 - (1+r)^-n), where r is monthly rate
-     */
+
     private List<Echeance> generateSchedule(long creditId, double principal, double annualRate, int months, LocalDate firstDueDate) {
         double monthlyRate = annualRate / 12.0;
         double mensualite = (monthlyRate == 0)

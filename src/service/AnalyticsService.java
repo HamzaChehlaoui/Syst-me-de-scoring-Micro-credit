@@ -4,8 +4,11 @@ package service;
 import enums.Secteur;
 import model.Employe;
 import model.Personne;
+import model.Credit;
+import model.Echeance;
 import repository.ClientRepository;
 import repository.CreditRepository;
+import repository.EcheanceRepository;
 import repository.IncidentRepository;
 
 import java.sql.SQLException;
@@ -21,11 +24,13 @@ public class AnalyticsService {
     private final ClientRepository clientRepository;
     private final CreditRepository creditRepository;
     private final IncidentRepository incidentRepository;
+    private final EcheanceRepository echeanceRepository;
 
-    public AnalyticsService(ClientRepository clientRepository, CreditRepository creditRepository, IncidentRepository incidentRepository) {
+    public AnalyticsService(ClientRepository clientRepository, CreditRepository creditRepository, IncidentRepository incidentRepository, EcheanceRepository echeanceRepository) {
         this.clientRepository = clientRepository;
         this.creditRepository = creditRepository;
         this.incidentRepository = incidentRepository;
+        this.echeanceRepository = echeanceRepository;
     }
 
     public List<Personne> searchByAgeIncomeAndMarital(int minAge, int maxAge, double minIncome, double maxIncome, String situationFamiliale) throws SQLException {
@@ -46,11 +51,39 @@ public class AnalyticsService {
     public List<Personne> top10RiskyClients() throws SQLException {
         List<Personne> all = clientRepository.findAll();
         Set<Long> recentIncidentEcheance = incidentRepository.findRecentMonths(6).stream().map(Incident -> Incident.getEcheanceId()).collect(Collectors.toSet());
-        return all.stream()
-                .filter(p -> p.getScore() != null && p.getScore() < 60)
+
+        List<Personne> riskyClients = new ArrayList<>();
+        for (Personne p : all) {
+            if (p.getScore() != null && p.getScore() < 60) {
+                try {
+                    if (hasRecentIncidents(p.getId(), recentIncidentEcheance)) {
+                        riskyClients.add(p);
+                    }
+                } catch (SQLException e) {
+                    // Log error and continue with next client
+                    System.err.println("Error checking incidents for client " + p.getId() + ": " + e.getMessage());
+                }
+            }
+        }
+
+        return riskyClients.stream()
                 .sorted(Comparator.comparing(p -> p.getScore(), Comparator.reverseOrder()))
                 .limit(10)
                 .collect(Collectors.toList());
+    }
+
+    private boolean hasRecentIncidents(Long clientId, Set<Long> recentIncidentEcheance) throws SQLException {
+        List<Credit> credits = creditRepository.findByPersonne(clientId);
+
+        for (Credit credit : credits) {
+            List<Echeance> echeances = echeanceRepository.findByCredit(credit.getId());
+            for (Echeance echeance : echeances) {
+                if (recentIncidentEcheance.contains(echeance.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public Map<Secteur, Double> averageScorePerSector() throws SQLException {

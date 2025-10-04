@@ -12,10 +12,10 @@ public class Credit {
     private LocalDate dateCredit;
     private double montantDemande;
     private Double montantOctroye;
-    private double tauxInteret; // annual nominal rate (e.g., 0.12 for 12%)
+    private double tauxInteret;
     private int dureeMois;
     private String typeCredit;
-    private String decision; // DecisionType name
+    private String decision;
     private LocalDateTime createdAt;
 
     public Long getId() { return id; }
