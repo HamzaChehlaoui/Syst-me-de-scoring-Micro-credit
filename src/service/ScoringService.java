@@ -83,25 +83,62 @@ public class ScoringService {
 
     private int computeHistorique(List<Incident> incidents) {
         if (incidents == null || incidents.isEmpty()) {
-
             return 10;
         }
+
         int points = 0;
-        long impayeNonRegle = incidents.stream().filter(i -> i.getTypeIncident() == IncidentType.IMPAYE).count();
-        long retards = incidents.stream().filter(i -> i.getTypeIncident() == IncidentType.RETARD).count();
-        long regularisations = incidents.stream().filter(i -> i.getTypeIncident() == IncidentType.REGULARISATION).count();
 
-        if (impayeNonRegle > 0) points -= 10;
-        if (retards >= 1 && retards <= 3) points -= 3;
-        if (retards >= 4) points -= 5;
-        if (regularisations > 0) points += 3;
+        // Count different types of incidents
+        long impayesNonRegles = incidents.stream()
+                .filter(i -> i.getTypeIncident() == IncidentType.IMPAYE)
+                .filter(i -> !i.isRegle())
+                .count();
 
-        if (impayeNonRegle == 0 && (retards > 0 || regularisations > 0)) {
+        long impayesRegles = incidents.stream()
+                .filter(i -> i.getTypeIncident() == IncidentType.IMPAYE)
+                .filter(i -> i.isRegle())
+                .count();
+
+        long retardsNonRegles = incidents.stream()
+                .filter(i -> i.getTypeIncident() == IncidentType.RETARD)
+                .filter(i -> !i.isRegle())
+                .count();
+
+        long retardsRegles = incidents.stream()
+                .filter(i -> i.getTypeIncident() == IncidentType.RETARD)
+                .filter(i -> i.isRegle())
+                .count();
+
+        // Apply rules
+
+        // 1. Unpaid incidents: -10 pts
+        if (impayesNonRegles > 0) {
+            points -= 10;
+        }
+
+        // 2. Paid incidents (resolved): +5 pts
+        if (impayesRegles > 0) {
             points += 5;
         }
+
+        // 3. 1-3 occasional late payments (unpaid): -3 pts
+        if (retardsNonRegles >= 1 && retardsNonRegles <= 3) {
+            points -= 3;
+        }
+
+        // 4. Regular late payments ≥4 (unpaid): -5 pts
+        if (retardsNonRegles >= 4) {
+            points -= 5;
+        }
+
+        // 5. Late but paid: +3 pts
+        if (retardsRegles > 0) {
+            points += 3;
+        }
+
+        // Limit between -15 and +15
         return Math.max(-15, Math.min(15, points));
     }
-
     private int computeRelationClient(Personne p, boolean isExisting) {
 
 

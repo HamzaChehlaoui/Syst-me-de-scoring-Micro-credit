@@ -1,7 +1,5 @@
 package service;
 
-
-
 import enums.IncidentType;
 import enums.PaymentStatus;
 import model.Echeance;
@@ -16,9 +14,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-/**
- * Handles simulated payments and incident creation.
- */
 public class PaymentService {
 
     private final EcheanceRepository echeanceRepository;
@@ -26,7 +21,10 @@ public class PaymentService {
     private final ClientRepository clientRepository;
     private final ScoringService scoringService;
 
-    public PaymentService(EcheanceRepository echeanceRepository, IncidentRepository incidentRepository, ClientRepository clientRepository, ScoringService scoringService) {
+    public PaymentService(EcheanceRepository echeanceRepository,
+                          IncidentRepository incidentRepository,
+                          ClientRepository clientRepository,
+                          ScoringService scoringService) {
         this.echeanceRepository = echeanceRepository;
         this.incidentRepository = incidentRepository;
         this.clientRepository = clientRepository;
@@ -35,19 +33,32 @@ public class PaymentService {
 
     /**
      * Simulate payment for an echeance and update status and incidents.
-     * - Retard: 5–30 days after due date => EN_RETARD
-     * - Impaye: 31+ days after due date => IMPAYE
+     * Rules:
+     * - On time (diff <= 4): PAYE_A_TEMPS, no incident
+     * - Late 5-30 days: EN_RETARD, create RETARD incident (regle=true)
+     * - Late 31+ days: IMPAYE, create IMPAYE incident (regle=false)
      */
-    public void pay(long echeanceId, LocalDate paymentDate, Personne personne, boolean isExisting, java.util.List<Incident> historicalForPerson) throws SQLException {
+    public void pay(long echeanceId, LocalDate paymentDate, Personne personne,
+                    boolean isExisting, java.util.List<Incident> historicalForPerson) throws SQLException {
+
         Optional<Echeance> opt = echeanceRepository.findById(echeanceId);
-        if (!opt.isPresent()) throw new IllegalArgumentException("Echeance not found");
+        if (!opt.isPresent()) {
+            throw new IllegalArgumentException("Echeance not found");
+        }
+
         Echeance e = opt.get();
         long diff = ChronoUnit.DAYS.between(e.getDateEcheance(), paymentDate);
         PaymentStatus status;
         Incident incident = null;
 
-        if (diff <= 0) {
+        System.out.println("Date echeance: " + e.getDateEcheance());
+        System.out.println("Date paiement: " + paymentDate);
+        System.out.println("Retard: " + diff + " jours");
+
+        if (diff <= 4) {
             status = PaymentStatus.PAYE_A_TEMPS;
+            System.out.println("Paiement a temps (pas d'incident)");
+
         } else if (diff >= 5 && diff <= 30) {
             status = PaymentStatus.EN_RETARD;
             incident = new Incident();
@@ -55,23 +66,69 @@ public class PaymentService {
             incident.setEcheanceId(echeanceId);
             incident.setTypeIncident(IncidentType.RETARD);
             incident.setImpactScore(-3);
+            incident.setRegle(true);
             incident.setNote("Paiement en retard de " + diff + " jours");
+            System.out.println("Retard de " + diff + " jours (incident RETARD cree, regle)");
+
         } else {
+
             status = PaymentStatus.IMPAYE;
             incident = new Incident();
             incident.setDateIncident(paymentDate);
             incident.setEcheanceId(echeanceId);
             incident.setTypeIncident(IncidentType.IMPAYE);
             incident.setImpactScore(-10);
-            incident.setNote("Impayé " + diff + " jours de retard");
+            incident.setRegle(false);
+            incident.setNote("Impaye " + diff + " jours de retard");
+            System.out.println("Impaye de " + diff + " jours (incident IMPAYE cree, non regle)");
         }
 
+        // Update payment status
         echeanceRepository.updatePayment(e.getId(), paymentDate, status);
+
+        // If incident created, save it and recalculate score
         if (incident != null) {
             incidentRepository.create(incident);
-            // re-evaluate score
-            int newScore = scoringService.computeScore(personne, historicalForPerson, isExisting);
+            System.out.println("Incident enregistre avec ID: " + incident.getId());
+
+            // Add new incident to historical list
+            java.util.List<Incident> updatedList = new java.util.ArrayList<>(historicalForPerson);
+            updatedList.add(incident);
+
+            // Recalculate score
+            int oldScore = personne.getScore();
+            int newScore = scoringService.computeScore(personne, updatedList, isExisting);
             clientRepository.updateScore(personne.getId(), newScore);
+
+            System.out.println("Score mis a jour: " + oldScore + " → " + newScore);
         }
+    }
+
+
+    public void regularizeIncident(long incidentId, Personne personne, boolean isExisting) throws SQLException {
+        Optional<Incident> opt = incidentRepository.findById(incidentId);
+        if (!opt.isPresent()) {
+            throw new IllegalArgumentException("Incident not found");
+        }
+
+        Incident incident = opt.get();
+        if (incident.isRegle()) {
+            System.out.println("Cet incident est deja regle");
+            return;
+        }
+
+        // Mark as resolved
+        incidentRepository.updateRegle(incidentId, true);
+        incident.setRegle(true);
+
+        System.out.println("Incident ID " + incidentId + " marque comme regle");
+
+        // Recalculate score
+        java.util.List<Incident> allIncidents = incidentRepository.findByPersonneId(personne.getId());
+        int oldScore = personne.getScore();
+        int newScore = scoringService.computeScore(personne, allIncidents, isExisting);
+        clientRepository.updateScore(personne.getId(), newScore);
+
+        System.out.println("Score mis a jour: " + oldScore + " → " + newScore);
     }
 }

@@ -21,7 +21,7 @@ public class MainApp {
     private final MenuView menuView = new MenuView(scanner);
     private final ClientView clientView = new ClientView(scanner, clientRepository, auditRepository);
     private final CreditView creditView = new CreditView(scanner, clientRepository, creditService, auditRepository, scoringService);
-    private final PaymentView paymentView = new PaymentView(scanner, echeanceRepository, paymentService, clientRepository);
+    private final PaymentView paymentView = new PaymentView(scanner, echeanceRepository, paymentService, clientRepository ,creditRepository , incidentRepository);
     private final AnalyticsView analyticsView = new AnalyticsView(scanner, analyticsService);
     private final DemoView demoView = new DemoView(scanner, clientRepository, creditService, scoringService, echeanceRepository);
 
