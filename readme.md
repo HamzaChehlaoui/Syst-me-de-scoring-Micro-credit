@@ -200,7 +200,7 @@ Score < 60        →  ❌ REFUS AUTOMATIQUE
 │
 │
 ├── 📄 README.md
-└── 📄 pom.xml
+
 ```
 
 ---
